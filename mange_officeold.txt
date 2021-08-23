@@ -1,0 +1,165 @@
+   <br>
+          <br>
+          <%
+              
+           String memberid = (String) session.getAttribute("memId");
+          if(request.getParameter("Enter") != null){    
+               
+          if(request.getParameter("mange").equals("add")){
+                      %>
+                <form action="OfficeHoursController">
+                    <br>
+                    <br>
+                  Enter Date: <input type="textbox" name ="date" >
+                  <br>
+                  Enter From: <input type="textbox" name ="from"  >
+                  <br>
+                  Enter To: <input type="textbox" name ="to" >
+                  <br>
+                  Enter Location: <input type="textbox" name ="location" >
+                  <br>
+                  Enter on or off : <input type="textbox" name ="onoroff">
+                  <br>
+                  <input type="submit" value="add" name ="addd">
+            </form>       
+          <%
+            
+              }
+          else if(request.getParameter("mange").equals("update")){
+                %>
+            
+                <form>
+                Enter Office Hours ID: <input type="textbox" name ="data">
+              <input type="submit" value="Enter" name ="up">
+                </form>
+              <br>
+              <br>
+             
+              <%
+                 
+               if(request.getParameter("up") != null){
+               officehoursDaoImpl officehoursDaoImpl = new officehoursDaoImpl();
+               List<officehourss> officehours = officehoursDaoImpl.getOfficeHourByID(request.getParameter("data"),memberid);
+               
+               if(officehours.size() == 1){
+                %>
+                <form>
+                Enter Date: <input type="textbox" name ="date"  value="<%out.print(officehours.get(0).getDate());%>">
+                  <br>
+                  Enter From: <input type="textbox" name ="from"  value="<%out.print(officehours.get(0).getFrom());%>">
+                  <br>
+                  Enter To: <input type="textbox" name ="to"  value="<%out.print(officehours.get(0).getTo());%>">
+                  <br>
+                  Enter Location: <input type="textbox" name ="location" value="<%out.print(officehours.get(0).getLocation());%>">
+                  <br>
+                  Enter on or off : <input type="textbox" name ="onoroff"  value="<%out.print(officehours.get(0).getOnoroff());%>">
+                  <br>
+                  <input type="submit" value="u" name ="Update">
+        </form>
+                 <%
+                     if(request.getParameter("Update") != null){
+                         
+                        String From = request.getParameter("from");
+                        String To = request.getParameter("to");
+                        
+                        if(From.substring(From.length()-2).equals(To.substring(To.length()-2))){
+                         int f = Integer.parseInt(From.substring(0,From.length()-2));
+                         int t = Integer.parseInt(To.substring(0,To.length()-2));
+                         
+                         if(Math.abs(f-t)== 1 ){
+                        officehours.get(0).setDate(request.getParameter("date"));
+                        officehours.get(0).setFrom(From);
+                        officehours.get(0).setTo(To);
+                        officehours.get(0).setLocation(request.getParameter("location"));
+                        officehours.get(0).setOnoroff(request.getParameter("onoroff"));
+                        officehoursDaoImpl.updateOfficeHours(officehours.get(0));
+                         
+                         
+                   String officeid = String.valueOf(officehours.get(0).getId());
+                   slotDaoImpl slotDaoImpl = new slotDaoImpl ();
+                   List<slot> slots = slotDaoImpl.showAllSlotsOfOfficeHours(officeid);
+                   for(slot slot : slots){
+                        slot.setFrom(From);
+                        slot.setTo(To);
+                        slotDaoImpl.updateSlot(slot);
+                   }
+                         
+                         
+                         
+                         }
+                          else{out.print("Error in time of office hours"); }
+                        }
+                        else{out.print("Error in time of office hours"); }
+                        }
+                    }
+               else{
+               out.print("There is no officehours by this id");
+               }
+              }
+          }
+          
+          else if(request.getParameter("mange").equals("view")){
+          
+          %>
+          <br>
+          <br>
+          <form>
+          <label for="by">Choose Way To View :</label>
+          <select name="ma">
+              <option value="all">All</option>
+                <option value="date">Date</option>
+                <option value="from">From</option>
+                <option value="to">To</option>
+                <option value="location">Location</option>
+                <option value="onoroff">On or Off</option>
+          </select>
+                   Enter Data: <input type="textbox" name ="data">
+                   <input type="submit" value="View" name ="view">
+          </form>
+               
+          <%   if(request.getParameter("view") != null){
+              String col = request.getParameter("ma");   
+                officehoursDaoImpl officehoursDaoImpl = new officehoursDaoImpl();
+                 //out.print(memberid+" "+col+" "+ request.getParameter("data"));
+               List<officehourss> officehours = new ArrayList();
+                 if(col.equals("all")){
+                  officehours=officehoursDaoImpl.showAllOfficeHoursOfMember(memberid);
+               }  
+               else {
+                   officehours = officehoursDaoImpl.showAllOfficeHours(memberid, col,request.getParameter("data"));
+               }
+               if(officehours.size() != 0){
+                  
+                   for(officehourss office : officehours ){
+                       out.print("ID: " + office.getId());
+                       out.print("<br>");
+                         out.print("MemberID: " + office.getMemberid());
+                       out.print("<br>");
+                         out.print("Date: " + office.getDate());
+                       out.print("<br>");
+                         out.print("From: " + office.getFrom());
+                        out.print("<br>");
+                         out.print("To: " + office.getTo());
+                       out.print("<br>");
+                         out.print("Location: " + office.getLocation());
+                         out.print("<br>");
+                            out.print("On Or Off: " + office.getOnoroff());
+                        out.print("<br>");
+                        out.print("-------------------------------------------------------------");
+                        out.print("<br>");
+                   }
+                   }
+                   else{out.print("There no office hours by this data"); } 
+
+}       }
+          
+else if(request.getParameter("mange").equals("delete")){
+            %>
+             <form action = "OfficeHoursController">  
+            Enter Office Hours ID: <input type="textbox" name ="data">
+              <input type="submit" value="Delete" name ="delete">
+              <br>
+             </form>
+             <% }
+
+}%>

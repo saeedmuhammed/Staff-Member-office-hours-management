@@ -1,0 +1,28 @@
+.nomesg{
+	
+	
+	text-align:center;
+	
+}
+.alert .alert-success{
+	
+	background-color:red;
+	
+	
+}
+.register-form{
+	
+	margin-left:350px;
+	
+}
+#send{
+	
+	 text-decoration: none;
+	 
+	
+}
+#send:hover 
+{
+     color:white; 
+     
+}

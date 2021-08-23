@@ -1,0 +1,91 @@
+      
+        
+        <h1>Search in staff of each subject</h1>
+         <form action ="viewofficehours.jsp" >
+            <table>
+                <tr>
+                    <td> Member ID: </td>
+                    <td><input type="text" name="memberID"></td>
+                </tr>
+                 <tr>
+                    <td><input type="submit" name="search" value="Search"></td>
+                    
+                 
+                </tr>
+            </table>
+             </form>
+                           
+        <br> <br>
+        <% if(request.getParameter("search")!=null){
+                
+                officehours officehour = new officehours();
+                officehoursDaoImpl  officehourDAOImpl = new  officehoursDaoImpl();
+                staffmember staffmember = new staffmember();
+                staffmemberDAOImpl staffmemberDAOImpl = new staffmemberDAOImpl();
+                slot slot = new slot();
+                slotDaoImpl slotDaoImpl = new slotDaoImpl();
+                
+               staffmember = staffmemberDAOImpl.getStaffMemberByID(request.getParameter("memberID"));
+               if(staffmember!=null){
+                 List<officehours> officehours = officehourDAOImpl.showAllOfficeHoursOfMember(request.getParameter("memberID"));
+                  for (int i = 0;i< officehours.size();i++){
+                      //out.pirntln("Saeed");
+                      //out.println(Integer.toString(officehours.get(i).getId()));
+                   List<slot> slots = slotDaoImpl.showAllSlotsOfOfficeHours(Integer.toString(officehours.get(i).getId()));
+                   if(slots.size()!=0){ 
+                   for(int j=0;j<slots.size();j++){
+                        if(slots.get(j).getReserved().equals("0")){
+                            
+                        out.print("SlotID "+slots.get(j).getSlotid());
+                        out.print("From "+slots.get(j).getFrom());
+                        out.print("To "+slots.get(j).getTo());
+                        }
+                    }
+                   }
+        
+        
+        %>
+          Date: <%out.print(officehours.get(i).getDate());%>
+                            <br>
+
+          From: <%out.println(officehours.get(i).getFrom());%>
+                       <br>
+
+          To: <%out.println(officehours.get(i).getTo());%>          
+           <br>
+
+          Location:  <%out.println(officehours.get(i).getLocation());%>
+                       <br>
+          Type:  <%out.println(officehours.get(i).getOnoroff());%>
+                       <br>
+             
+           ---------------------------------------------------
+                        <br>
+
+            <%}
+         }
+         else{out.print("There is no staff member with this id");}
+            
+         
+ }
+session.setAttribute("memberId",request.getParameter("memberID"));
+%> 
+ 
+  <h1>make appointment</h1>
+         <form action ="makeappointment" >
+            <table>
+                <tr>
+                    <td> Date: </td>
+                    <td><input type="text" name="date"></td>
+                </tr>
+                <tr>
+                    <td> SlotID: </td>
+                    <td><input type="text" name="slotid"></td>
+                </tr>
+                 <tr>
+                    <td><input type="submit" name="appointment" value="Make Appointment"></td>
+                    
+                 
+                </tr>
+            </table>
+             </form>
